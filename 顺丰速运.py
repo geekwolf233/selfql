@@ -299,31 +299,6 @@ class RUN:
         response = self.do_request(url, data=json_data)
         # print(response)
         if response.get('success') == True:
-            # 遍历所有分组的券列表
-            all_goods = []
-            for obj in response.get("obj", []):  # 遍历所有券分组
-                goods_list = obj.get("goodsList", [])
-                all_goods.extend(goods_list)  # 收集到一个总列表中
-               
-            # 尝试领取
-            for goods in all_goods:
-                exchange_times_limit = goods.get('exchangeTimesLimit', 0)
-    
-                # 检查券是否可兑换
-                if exchange_times_limit >= 1:
-                    print(f'尝试领取：{goods["goodsName"]}')
-                    
-                    # 尝试领取券
-                    if self.get_coupom(goods):
-                        print('成功领取券，任务结束！')
-                        return  # 成功领取后退出
-            print('所有券尝试完成，没有可用的券或全部领取失败。')
-        else:
-            print(f'> 获取券列表失败！原因：{response.get("errorMessage")}')
-
-        """
-        老代码
-        if response.get('success') == True:
             goodsList = response["obj"][1]["goodsList"]
             for goods in goodsList:
                 exchangeTimesLimit = goods['exchangeTimesLimit']
@@ -334,7 +309,6 @@ class RUN:
                     break
         else:
             print(f'>领券失败！原因：{response.get("errorMessage")}')
-        """
     def get_honeyTaskListStart(self):
         print('>>>开始获取采蜜换大礼任务列表')
         # 任务列表
