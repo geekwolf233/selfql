@@ -1,3 +1,4 @@
+//https://github.com/Xx1aoy1/scripts
 delete __filename
 delete __dirname
 ActiveXObject = undefined
