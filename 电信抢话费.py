@@ -427,7 +427,7 @@ if __name__ == "__main__":
     if 10 >h >0:
         print("当前小时为: "+str(h)+"已过0点但未到10点开始准备抢十点场次")
         wttime= run_Time(9,59,8) #抢十点场次  
-    elif 14 >= h >=10:
+    elif 14 > h >=10:
         print("当前小时为: "+str(h) +"已过10点但未到14点开始准备抢十四点场次")
         wttime= run_Time(13,59,8) #抢十四点场次
     else:
