@@ -1,4 +1,7 @@
 """
+https://github.com/linbailo/zyqinglong
+"""
+"""
 变量：
 ddgyToken: 必填，账号token，多账号换行或者@隔开，格式uid&token。uid可随便填，主要是方便区分账号用
 
