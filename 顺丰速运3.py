@@ -14,6 +14,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 IS_DEV = False
+GOODS_NO = ''
+
 if os.path.isfile('DEV_ENV.py'):
     import DEV_ENV
 
@@ -280,9 +282,15 @@ class RUN:
         print('>>>获取生活权益券列表')
         # 领取生活权益领券
         # https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberGoods~pointMallService~createOrder
-
+        
+        if ''!= GOODS_NO:
+            self.goodsNo = GOODS_NO
+            if self.get_coupom():
+                print('成功领取券，任务结束！')
+                return # 成功领取后退出
+            
         json_data = {
-            "memGrade": 2,
+            "memGrade": 1,
             "categoryCode": "SHTQ",
             "showCode": "SHTQWNTJ"
         }
@@ -290,17 +298,24 @@ class RUN:
         response = self.do_request(url, data=json_data)
         # print(response)
         if response.get('success') == True:
-            goodsList = response["obj"][0]["goodsList"]
-            for goods in goodsList:
+            all_goods = []
+            for obj in response.get("obj", []):  # 遍历所有券分组
+                goods_list = obj.get("goodsList", [])
+                all_goods.extend(goods_list)  # 收集到一个总列表中
+            for goods in all_goods:
                 exchangeTimesLimit = goods['exchangeTimesLimit']
                 if exchangeTimesLimit >= 1:
+                    print(f'尝试领取：{goods["goodsName"]}')
+                    
+                    # 尝试领取券
                     self.goodsNo = goods['goodsNo']
-                    print(f'当前选择券号：{self.goodsNo}')
-                    self.get_coupom()
-                    break
+                    if self.get_coupom():
+                        print('成功领取券，任务结束！')
+                        os.environ["SFSY_GOODS_NO"] = self.goodsNo
+                        return # 成功领取后退出
+            print('所有券尝试完成，没有可用的券或全部领取失败。')    
         else:
-            print(f'>领券失败！原因：{response.get("errorMessage")}')
-
+            print(f'> 获取券列表失败！原因：{response.get("errorMessage")}')
     def get_honeyTaskListStart(self):
         print('>>>开始获取采蜜换大礼任务列表')
         # 任务列表
@@ -1730,25 +1745,28 @@ def import_Tools():
 
 if __name__ == '__main__':
     APP_NAME = '顺丰速运'
-    ENV_NAME = 'sfsyUrl'
+    ENV_NAME = 'SFSY'
     CK_NAME = 'url'
     print(f'''
-       ✨✨✨ TG频道:https://t.me/fxmbb ✨✨✨
-       ✨✨✨ 更新时间2025.3.17✨✨✨
-      点击“积分”，以下几种url之一：
-        https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/shareGiftReceiveRedirect
-        https://mcs-mimp-web.sf-express.com/mcs-mimp/share/app/shareRedirect
-    多账号换行
-    变量名：sfsyUrl
-
+✨✨✨ {APP_NAME}脚本✨✨✨
     ''')
-    local_script_name = os.path.basename(__file__)
+
+    #分割变量
+    if ENV_NAME in os.environ:
+        tokens = re.split("@|#|\n",os.environ.get(ENV_NAME))
+    elif "sfsyUrl" in os.environ:
+        print("调用拉菲变量")
+        tokens = re.split("@|#|\n",os.environ.get("sfsyUrl"))
+    else:
+        tokens =['']
+        print(f'无{ENV_NAME}变量')
+        #exit()
     local_version = '2024.06.02'
-    token = os.getenv(ENV_NAME)
-    tokens = token.split('\n')
+    GOODS_NO = os.environ.get("SFSY_GOODS_NO")
     # print(tokens)
     if len(tokens) > 0:
         print(f"\n>>>>>>>>>>共获取到{len(tokens)}个账号<<<<<<<<<<")
         for index, infos in enumerate(tokens):
             run_result = RUN(infos, index).main()
             if not run_result: continue
+        if send: send(f'{APP_NAME}挂机通知', send_msg)
