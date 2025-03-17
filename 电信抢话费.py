@@ -1,4 +1,7 @@
 """
+https://github.com/Xx1aoy1/scripts
+"""
+"""
 新电信抢话费
 
 群里发的，未测试好，自测
