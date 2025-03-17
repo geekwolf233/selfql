@@ -1,4 +1,7 @@
 """
+https://github.com/linbailo/zyqinglong
+"""
+"""
 塔斯汀汉堡签到
 
 打开微信小程序抓sss-web.tastientech.com里面的user-token(一般在headers里)填到变量tsthbck里面即可
