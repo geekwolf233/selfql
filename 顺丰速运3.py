@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 IS_DEV = False
 GOODS_NO = ''
-RECEVIE_COUPON = False
+RECEVIE_COUPON = 'false'
 
 if os.path.isfile('DEV_ENV.py'):
     import DEV_ENV
@@ -286,7 +286,7 @@ class RUN:
             print(f'>领券失败！原因：{response.get("errorMessage")}')
 
     def get_coupom_list(self):
-        if True != RECEVIE_COUPON :
+        if 'true' != RECEVIE_COUPON :
             print('配置不做领券任务')
             return
 
