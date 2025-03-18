@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 IS_DEV = False
 GOODS_NO = ''
+RECEVIE_COUPON = False
 
 if os.path.isfile('DEV_ENV.py'):
     import DEV_ENV
@@ -285,15 +286,15 @@ class RUN:
             print(f'>领券失败！原因：{response.get("errorMessage")}')
 
     def get_coupom_list(self):
-        if 1==1 :
-            print('所有券都无货，退出领取')
+        if !RECEVIE_COUPON :
+            print('配置不做领券任务')
             return
 
         print('>>>获取生活权益券列表')
         # 领取生活权益领券
         # https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberGoods~pointMallService~createOrder
         
-        if GOODS_NO != None :
+        if '' != GOODS_NO :
             print('存在缓存，尝试领取券'+GOODS_NO)
             self.goodsNo = GOODS_NO
             if self.get_coupom():
@@ -1772,7 +1773,10 @@ if __name__ == '__main__':
         print(f'无{ENV_NAME}变量')
         #exit()
     local_version = '2024.06.02'
-    GOODS_NO = os.environ.get("SFSY_GOODS_NO")
+    if RECEVIE_COUPON in os.environ:
+        RECEVIE_COUPON = os.environ.get("RECEVIE_COUPON")
+    if GOODS_NO in os.environ:
+        GOODS_NO= os.environ.get("SFSY_GOODS_NO")
     # print(tokens)
     if len(tokens) > 0:
         print(f"\n>>>>>>>>>>共获取到{len(tokens)}个账号<<<<<<<<<<")
@@ -1780,5 +1784,5 @@ if __name__ == '__main__':
             run_result = RUN(infos, index).main()
             if not run_result: continue
         if send: send(f'{APP_NAME}挂机通知', send_msg)
-        if GOODS_NO != None :
+        if '' != GOODS_NO :
             os.environ["SFSY_GOODS_NO"] = GOODS_NO
