@@ -285,11 +285,15 @@ class RUN:
             print(f'>领券失败！原因：{response.get("errorMessage")}')
 
     def get_coupom_list(self):
+        if 1==1 :
+            print('所有券都无货，退出领取')
+            return
+
         print('>>>获取生活权益券列表')
         # 领取生活权益领券
         # https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberGoods~pointMallService~createOrder
         
-        if ''!= GOODS_NO:
+        if GOODS_NO != None :
             print('存在缓存，尝试领取券'+GOODS_NO)
             self.goodsNo = GOODS_NO
             if self.get_coupom():
@@ -318,7 +322,6 @@ class RUN:
                     self.goodsNo = goods['goodsNo']
                     if self.get_coupom():
                         print('成功领取券，任务结束！')
-                        os.environ["SFSY_GOODS_NO"] = self.goodsNo
                         return # 成功领取后退出
             print('所有券尝试完成，没有可用的券或全部领取失败。')    
         else:
@@ -1777,3 +1780,5 @@ if __name__ == '__main__':
             run_result = RUN(infos, index).main()
             if not run_result: continue
         if send: send(f'{APP_NAME}挂机通知', send_msg)
+        if GOODS_NO != None :
+            os.environ["SFSY_GOODS_NO"] = GOODS_NO
