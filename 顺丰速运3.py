@@ -290,6 +290,7 @@ class RUN:
         # https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberGoods~pointMallService~createOrder
         
         if ''!= GOODS_NO:
+            print('存在缓存，尝试领取券'+GOODS_NO)
             self.goodsNo = GOODS_NO
             if self.get_coupom():
                 print('成功领取券，任务结束！')
