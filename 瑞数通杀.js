@@ -1,4 +1,3 @@
-//https://github.com/Xx1aoy1/scripts
 delete __filename
 delete __dirname
 ActiveXObject = undefined
@@ -132,3 +131,4 @@ function main() {
     cookie = document.cookie.split(';')[0]
     return cookie
 }
+
