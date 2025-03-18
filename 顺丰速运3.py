@@ -1773,11 +1773,13 @@ if __name__ == '__main__':
         print(f'无{ENV_NAME}变量')
         #exit()
     local_version = '2024.06.02'
-    if RECEVIE_COUPON in os.environ:
+    if "RECEVIE_COUPON" in os.environ:
         RECEVIE_COUPON = os.environ.get("RECEVIE_COUPON")
-    if GOODS_NO in os.environ:
-        GOODS_NO= os.environ.get("SFSY_GOODS_NO")
+    if "SFSY_GOODS_NO" in os.environ:
+        GOODS_NO = os.environ.get("SFSY_GOODS_NO")
     # print(tokens)
+    print("RECEVIE_COUPON===="+RECEVIE_COUPON)
+    print("GOODS_NO===="+GOODS_NO)
     if len(tokens) > 0:
         print(f"\n>>>>>>>>>>共获取到{len(tokens)}个账号<<<<<<<<<<")
         for index, infos in enumerate(tokens):
