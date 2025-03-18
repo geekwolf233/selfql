@@ -131,4 +131,3 @@ function main() {
     cookie = document.cookie.split(';')[0]
     return cookie
 }
-
