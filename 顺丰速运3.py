@@ -282,8 +282,10 @@ class RUN:
         response = self.do_request(url, data=json_data)
         if response.get('success') == True:
             print(f'>领券成功！')
+            return True
         else:
             print(f'>领券失败！原因：{response.get("errorMessage")}')
+            return False
 
     def get_coupom_list(self):
         if 'true' != RECEVIE_COUPON :
