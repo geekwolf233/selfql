@@ -1,12 +1,8 @@
-# 非青龙下在文件开头添加账号配置,
-# process.env.chinaTelecomAccount = `
-# 13454545457#123456
-# 13454545457#456789
-# `.trim();
+
 '''
-变量：jdhf
+变量：chinaTelecomAccount
 变量格式: 手机号#服务密码
-多号创建多个变量或者换行、&隔开
+多号创建多个变量&隔开
 '''
 import requests
 import re
@@ -20,7 +16,7 @@ import ssl
 import execjs
 import os
 import sys
-
+import certifi
 from bs4 import BeautifulSoup
 
 from Crypto.PublicKey import RSA
@@ -72,6 +68,7 @@ ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 ssl_context.set_ciphers('DEFAULT@SECLEVEL=0')
 ss = requests.session()
+ss.verify = certifi.where()
 ss.ssl=ssl_context
 ss.headers={"User-Agent":"Mozilla/5.0 (Linux; Android 13; 22081212C Build/TKQ1.220829.002) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.97 Mobile Safari/537.36","Referer":"https://wapact.189.cn:9001/JinDouMall/JinDouMall_independentDetails.html"}
 ss.mount('https://', DESAdapter())
@@ -190,8 +187,34 @@ def userLoginNormal(phone,password):
     uuid = [''.join(random.sample(alphabet, 8)),''.join(random.sample(alphabet, 4)),'4'+''.join(random.sample(alphabet, 3)),''.join(random.sample(alphabet, 4)),''.join(random.sample(alphabet, 12))]
     timestamp=datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     loginAuthCipherAsymmertric = 'iPhone 14 15.4.' + uuid[0] + uuid[1] + phone + timestamp + password[:6] + '0$$$0.'
-
-    r = ss.post('https://appgologin.189.cn:9031/login/client/userLoginNormal',json={"headerInfos": {"code": "userLoginNormal", "timestamp": timestamp, "broadAccount": "", "broadToken": "", "clientType": "#9.6.1#channel50#iPhone 14 Pro Max#", "shopId": "20002", "source": "110003", "sourcePassword": "Sid98s", "token": "", "userLoginName": phone}, "content": {"attach": "test", "fieldData": {"loginType": "4", "accountType": "", "loginAuthCipherAsymmertric": b64(loginAuthCipherAsymmertric), "deviceUid": uuid[0] + uuid[1] + uuid[2], "phoneNum": encode_phone(phone), "isChinatelecom": "0", "systemVersion": "15.4.0", "authentication": password}}}).json()
+    login_date = {
+    "headerInfos": {
+        "code": "userLoginNormal",
+        "timestamp": timestamp,
+        "broadAccount": "",
+        "broadToken": "",
+        "clientType": "#10.5.0#channel50#iPhone 14 Pro Max#",
+        "shopId": "20002",
+        "source": "110003",
+        "sourcePassword": "Sid98s",
+        "token": "",
+        "userLoginName": encode_phone(phone)
+        },
+    "content": {
+        "attach": "test",
+        "fieldData": {
+            "loginType": "4",
+            "accountType": "",
+            "loginAuthCipherAsymmertric": b64(loginAuthCipherAsymmertric),
+            "deviceUid": uuid[0] + uuid[1] + uuid[2],
+            "phoneNum": encode_phone(phone),
+            "isChinatelecom": "0",
+            "systemVersion": "15.4.0",
+            "authentication": encode_phone(password)
+            }
+        }
+    }
+    r = ss.post('https://appgologin.189.cn:9031/login/client/userLoginNormal', json=login_date).json()
 
 
 
@@ -222,7 +245,7 @@ def get_ticket(phone,userId,token):
 def queryInfo(phone,s):
     global rs
     a = 1
-    while a < 10:
+    while a < 2:
         if rs:
             bd = js.call('main').split('=')
             ck[bd[0]] = bd[1]
@@ -241,7 +264,7 @@ def queryInfo(phone,s):
 
 
             res = s.post('http://wapact.189.cn:9000/gateway/stand/detail/exchange',json={"activityId":jdaid},cookies=ck).text
-
+            printn(res)
             if '$_ts=window' in res:
                 first_request()
                 rs = 1
@@ -340,7 +363,6 @@ def aes_ecb_encrypt(plaintext, key):
     return base64.b64encode(ciphertext).decode('utf-8')
 def ks(phone, ticket, uid):
     global wt
-
     wxp[phone] = uid
     s = requests.session()
     s.headers={"User-Agent":"Mozilla/5.0 (Linux; Android 13; 22081212C Build/TKQ1.220829.002) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.97 Mobile Safari/537.36","Referer":"https://wapact.189.cn:9001/JinDouMall/JinDouMall_independentDetails.html"}
@@ -365,9 +387,7 @@ def ks(phone, ticket, uid):
         if rs:
             bd = js.call('main').split('=')
             ck [bd[0]] = bd[1]
-
-        queryBigDataAppGetOrInfo = s.get('https://waphub.189.cn/gateway/golden/goldGoods/getGoodsList??floorType=0&userType=1&page&1&order=2&tabOrder=',cookies=ck).json()
-        # printn(queryBigDataAppGetOrInfo)
+        queryBigDataAppGetOrInfo = s.get('https://waphub.189.cn/gateway/golden/goldGoods/getGoodsList??floorType=0&userType=1&page&1&order=3&tabOrder=',cookies=ck).json()
         for i in queryBigDataAppGetOrInfo["biz"]["ExchangeGoodslist"]:
             if '话费' not in i["title"]:continue
 
@@ -450,7 +470,6 @@ def first_request(res=''):
         js_code_ym = f.read()
     js_code = js_code_ym.replace('content_code', content_code).replace("'ts_code'", ts_code)
     js = execjs.compile(js_code)
-
     for cookie in ss.cookies:
         ck[cookie.name] = cookie.value
     return content_code, ts_code, ck
@@ -458,6 +477,7 @@ def first_request(res=''):
 
 
 def main():
+    print()
     global wt,rs
     r = ss.get('https://wapact.189.cn:9001/gateway/stand/detailNew/exchange')
     if '$_ts=window' in r.text:
@@ -467,20 +487,17 @@ def main():
     else:
         print("瑞数加密已关闭")
         rs = 0
-    if os.environ.get('jdhf')!= None:
-        chinaTelecomAccount = os.environ.get('jdhf')
+    if os.environ.get('chinaTelecomAccount')!= None:
+        chinaTelecomAccount = os.environ.get('chinaTelecomAccount')
     else:
         chinaTelecomAccount = jdhf
+    for i in chinaTelecomAccount.split('\n'):
 
-    for i in chinaTelecomAccount.split('&'):
-
-        i = i.split('@')
+        i = i.split('#')
         phone = i[0]
         password = i[1]
         uid = i[-1]
         ticket = False
-
-        #ticket = get_userTicket(phone)
 
         if phone in load_token:
             printn(f'{phone} 使用缓存登录')
@@ -511,5 +528,4 @@ try:
         load_token = json.load(f)
 except:
     load_token = {}
-
 main()
