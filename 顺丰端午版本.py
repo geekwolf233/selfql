@@ -126,8 +126,8 @@ class RUN:
 
     def login(self, sfurl):
         try:
-            decoded_url = unquote(sfurl)
-            ress = self.s.get(decoded_url, headers=self.headers)
+            #decoded_url = unquote(sfurl)
+            ress = self.s.get(sfurl, headers=self.headers)
             self.user_id = self.s.cookies.get_dict().get('_login_user_id_', '')
             self.phone = self.s.cookies.get_dict().get('_login_mobile_', '')
             self.mobile = self.phone[:3] + "*" * 4 + self.phone[7:] if self.phone else ''
@@ -1048,7 +1048,7 @@ if __name__ == '__main__':
     local_version = '2025.01.06'
     token = os.getenv(ENV_NAME)
     # 将分隔符从\n改为&
-    tokens = token.split('&')
+    tokens = token.split('#')
     # print(tokens)
     if len(tokens) > 0:
         print(f"==================================\n🚚 共获取到{len(tokens)}个账号\n😣 修改By:呆呆呆呆\n==================================")
